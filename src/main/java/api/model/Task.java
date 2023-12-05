@@ -19,10 +19,10 @@ public class Task {
     private String status;
     private String priority;
 
-    @OneToOne
+    @ManyToOne
     private User author;
 
-    @OneToMany
+    @ManyToMany
     private List<User> listOfExecutors = new ArrayList<>();
 
     @OneToMany

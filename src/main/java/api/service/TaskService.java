@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 public class TaskService implements ITaskService {
@@ -98,6 +99,21 @@ public class TaskService implements ITaskService {
     public TaskResponse getTaskResponse(int id) {
         Task task = getTaskById(id);
         return taskEntityToDto(task);
+    }
+
+    @Override
+    public List<TaskResponse> getTasksByAuthor(int id) {
+        User author = userService.getUserById(id);
+        return taskRepository.findAllByAuthor(author).stream().map(this::taskEntityToDto).toList();
+    }
+
+    @Override
+    public List<TaskResponse> getTasksByExecutor(int id) {
+        return taskRepository.findAllByExecutorId(id).stream()
+                .map(this::getTaskById)
+                .filter(Objects::nonNull)
+                .map(this::taskEntityToDto)
+                .toList();
     }
 
     public TaskResponse taskEntityToDto(Task task) {

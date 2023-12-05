@@ -38,6 +38,16 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTaskResponse(id).getAuthor(), HttpStatus.OK);
     }
 
+    @GetMapping("author/{id}")
+    public ResponseEntity<List<TaskResponse>> getTasksByAuthor(@PathVariable int id) {
+        return new ResponseEntity<>(taskService.getTasksByAuthor(id), HttpStatus.OK);
+    }
+
+    @GetMapping("executor/{id}")
+    public ResponseEntity<List<TaskResponse>> getTasksByExecutor(@PathVariable int id) {
+        return new ResponseEntity<>(taskService.getTasksByExecutor(id), HttpStatus.OK);
+    }
+
     @DeleteMapping("{id}/delete")
     public ResponseEntity<TaskResponse> deleteTaskById(@PathVariable int id) {
         return new ResponseEntity<>(taskService.deleteTaskById(id), HttpStatus.OK);
