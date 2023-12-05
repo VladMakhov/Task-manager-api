@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/task/")
+@RequestMapping("/api/")
 public class TaskController {
 
     private final ITaskService taskService;
@@ -18,52 +18,47 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("task/{id}")
     public ResponseEntity<TaskResponse> getTaskById(@PathVariable int id) {
         return new ResponseEntity<>(taskService.getTaskResponse(id), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/comments")
+    @GetMapping("task/{id}/comments")
     public ResponseEntity<List<CommentResponse>> getCommentsFromTaskById(@PathVariable int id) {
         return new ResponseEntity<>(taskService.getTaskResponse(id).getComments(), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/executors")
+    @GetMapping("task/{id}/executors")
     public ResponseEntity<List<UserResponse>> getListOfExecutors(@PathVariable int id) {
-        return new ResponseEntity<>(taskService.getTaskResponse(id).getListOfExecutors(), HttpStatus.OK);
+        return new ResponseEntity<>(taskService.getTaskResponse(id).getExecutors(), HttpStatus.OK);
     }
 
-    @GetMapping("{id}/author")
+    @GetMapping("task/{id}/author")
     public ResponseEntity<UserResponse> getAuthor(@PathVariable int id) {
         return new ResponseEntity<>(taskService.getTaskResponse(id).getAuthor(), HttpStatus.OK);
     }
 
-    @GetMapping("author/{id}")
+    @GetMapping("user/{id}/backlog")
     public ResponseEntity<List<TaskResponse>> getTasksByAuthor(@PathVariable int id) {
         return new ResponseEntity<>(taskService.getTasksByAuthor(id), HttpStatus.OK);
     }
 
-    @GetMapping("executor/{id}")
+    @GetMapping("user/{id}/tasks")
     public ResponseEntity<List<TaskResponse>> getTasksByExecutor(@PathVariable int id) {
         return new ResponseEntity<>(taskService.getTasksByExecutor(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}/delete")
-    public ResponseEntity<TaskResponse> deleteTaskById(@PathVariable int id) {
-        return new ResponseEntity<>(taskService.deleteTaskById(id), HttpStatus.OK);
-    }
-
-    @PostMapping("create")
+    @PostMapping("task/create")
     public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest request) {
         return new ResponseEntity<>(taskService.createTask(request), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/updateStatus")
+    @PutMapping("task/{id}/updateStatus")
     public ResponseEntity<TaskResponse> updateStatus(@PathVariable int id, @RequestBody UpdateStatusRequest request) {
         return new ResponseEntity<>(taskService.updateStatus(id, request.getStatus()), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/addComment")
+    @PutMapping("task/{id}/addComment")
     public ResponseEntity<TaskResponse> addComment(@PathVariable int id, @RequestBody AddCommentRequest request) {
         return new ResponseEntity<>(taskService.addComment(id, request), HttpStatus.OK);
     }

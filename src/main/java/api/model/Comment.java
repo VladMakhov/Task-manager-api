@@ -13,7 +13,7 @@ public class Comment {
 
     private String comment;
 
-    @OneToOne
+    @ManyToOne
     private User author;
 
 }

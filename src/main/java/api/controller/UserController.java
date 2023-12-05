@@ -21,11 +21,6 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserResponse(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}/delete")
-    public ResponseEntity<User> deleteUserById(@PathVariable int id) {
-        return new ResponseEntity<>(userService.deleteUserById(id), HttpStatus.OK);
-    }
-
     @PutMapping("{id}/update")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);

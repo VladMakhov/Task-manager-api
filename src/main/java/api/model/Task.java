@@ -23,8 +23,8 @@ public class Task {
     private User author;
 
     @ManyToMany
-    private List<User> listOfExecutors = new ArrayList<>();
+    private List<User> executor = new ArrayList<>();
 
     @OneToMany
-    private List<Comment> comments = new ArrayList<>();
+    private List<Comment> comment = new ArrayList<>();
 }

@@ -12,5 +12,5 @@ public class TaskRequest {
     private String status;
     private String priority;
     private int author;
-    private List<Integer> listOfExecutors;
+    private List<Integer> executors;
 }

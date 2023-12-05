@@ -13,6 +13,6 @@ public class TaskResponse {
     private String status;
     private String priority;
     private UserResponse author;
-    private List<UserResponse> listOfExecutors = new ArrayList<>();
+    private List<UserResponse> executors = new ArrayList<>();
     private List<CommentResponse> comments = new ArrayList<>();
 }

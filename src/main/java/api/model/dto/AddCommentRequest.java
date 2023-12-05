@@ -6,5 +6,4 @@ import lombok.Data;
 public class AddCommentRequest {
     private int id;
     private String comment;
-    private int authorId;
 }

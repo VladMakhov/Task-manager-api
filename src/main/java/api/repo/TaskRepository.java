@@ -13,8 +13,8 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findAllByAuthor(User author);
     @Query(nativeQuery = true, value = """
-                    select task_id from tasks_list_of_executors
-                    where list_of_executors_id = :executorId
+                    select task_id from tasks_executor
+                    where executor_id = :executorId
             """)
     List<Integer> findAllByExecutorId(@Param("executorId") int id);
 }

@@ -10,7 +10,6 @@ import java.util.List;
 public interface ITaskService {
     TaskResponse createTask(TaskRequest request);
     Task getTaskById(int id);
-    TaskResponse deleteTaskById(int id);
     TaskResponse updateStatus(int id, String status);
     TaskResponse addComment(int taskId, AddCommentRequest request);
     TaskResponse getTaskResponse(int id);

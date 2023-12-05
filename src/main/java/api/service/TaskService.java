@@ -8,12 +8,12 @@ import api.model.User;
 import api.model.dto.*;
 import api.repo.CommentRepository;
 import api.repo.TaskRepository;
+import api.repo.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Service
@@ -22,11 +22,13 @@ public class TaskService implements ITaskService {
     private final TaskRepository taskRepository;
     private final IUserService userService;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository, IUserService userService, CommentRepository commentRepository) {
+    public TaskService(TaskRepository taskRepository, IUserService userService, CommentRepository commentRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -38,15 +40,15 @@ public class TaskService implements ITaskService {
         createdTask.setPriority(request.getPriority());
         createdTask.setStatus(request.getStatus());
         createdTask.setAuthor(userService.getUserById(request.getAuthor()));
-        if (request.getListOfExecutors() != null) {
+        if (request.getExecutors() != null) {
             List<User> existingExecutors = new ArrayList<>();
-            for (int id : request.getListOfExecutors()) {
+            for (int id : request.getExecutors()) {
                 User user = userService.getUserById(id);
                 if (user != null) {
                     existingExecutors.add(user);
                 }
             }
-            createdTask.setListOfExecutors(existingExecutors);
+            createdTask.setExecutor(existingExecutors);
         }
         return taskEntityToDto(taskRepository.save(createdTask));
     }
@@ -58,17 +60,10 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public TaskResponse deleteTaskById(int id) {
-        Task task = getTaskById(id);
-        taskRepository.deleteById(id);
-        return taskEntityToDto(task);
-    }
-
-    @Override
     public TaskResponse updateStatus(int id, String status) {
         Task task = getTaskById(id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<User> executors = task.getListOfExecutors();
+        List<User> executors = task.getExecutor();
         boolean exist = false;
         for (User user : executors) {
             if (user.getEmail().equals(username)) {
@@ -84,15 +79,16 @@ public class TaskService implements ITaskService {
 
     @Override
     public TaskResponse addComment(int taskId, AddCommentRequest request) {
-        User author = userService.getUserById(request.getAuthorId());
-
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByEmail(username).orElseThrow(
+                () -> new UserNotFoundException("User with username " + username + " not found"));
+        User author = userService.getUserById(user.getId());
         Task task = getTaskById(taskId);
         Comment comment = new Comment();
-
         comment.setId(request.getId());
         comment.setAuthor(author);
         comment.setComment(request.getComment());
-        task.getComments().add(comment);
+        task.getComment().add(comment);
         commentRepository.save(comment);
         return taskEntityToDto(taskRepository.save(task));
     }
@@ -134,12 +130,12 @@ public class TaskService implements ITaskService {
         response.setPriority(task.getPriority());
         response.setAuthor(UserService.EntityToDto(task.getAuthor()));
         List<UserResponse> userResponseList = new ArrayList<>();
-        for (User user : task.getListOfExecutors()) {
+        for (User user : task.getExecutor()) {
             userResponseList.add(UserService.EntityToDto(user));
         }
-        response.setListOfExecutors(userResponseList);
+        response.setExecutors(userResponseList);
         List<CommentResponse> commentResponseList = new ArrayList<>();
-        for (Comment comment : task.getComments()) {
+        for (Comment comment : task.getComment()) {
             commentResponseList.add(commentEntityToDto(comment));
         }
         response.setComments(commentResponseList);

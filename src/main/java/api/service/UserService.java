@@ -29,13 +29,6 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User deleteUserById(int id) {
-        User user = getUserById(id);
-        userRepository.deleteById(id);
-        return user;
-    }
-
-    @Override
     public User updateUser(User user) {
         return userRepository.save(user);
     }
