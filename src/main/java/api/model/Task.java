@@ -3,6 +3,7 @@ package api.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,9 +19,12 @@ public class Task {
     private String status;
     private String priority;
 
-    @OneToOne
+    @ManyToOne
     private User author;
 
+    @ManyToMany
+    private List<User> executor = new ArrayList<>();
+
     @OneToMany
-    private List<User> listOfExecutors;
+    private List<Comment> comment = new ArrayList<>();
 }
