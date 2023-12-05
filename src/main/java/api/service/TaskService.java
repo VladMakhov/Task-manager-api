@@ -1,5 +1,7 @@
 package api.service;
 
+import api.exception.TaskNotFoundException;
+import api.exception.UserNotFoundException;
 import api.model.Comment;
 import api.model.Task;
 import api.model.User;
@@ -52,7 +54,7 @@ public class TaskService implements ITaskService {
     @Override
     public Task getTaskById(int id) {
         return taskRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("ERROR: Task with id " + id + " not found"));
+                () -> new TaskNotFoundException("ERROR: Task with id " + id + " not found"));
     }
 
     @Override
@@ -104,11 +106,18 @@ public class TaskService implements ITaskService {
     @Override
     public List<TaskResponse> getTasksByAuthor(int id) {
         User author = userService.getUserById(id);
+        if (author == null) {
+            throw new UserNotFoundException("User with id " + id + " not found");
+        }
         return taskRepository.findAllByAuthor(author).stream().map(this::taskEntityToDto).toList();
     }
 
     @Override
     public List<TaskResponse> getTasksByExecutor(int id) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException("User with id " + id + " not found");
+        }
         return taskRepository.findAllByExecutorId(id).stream()
                 .map(this::getTaskById)
                 .filter(Objects::nonNull)

@@ -1,5 +1,6 @@
 package api.service;
 
+import api.exception.UserNotFoundException;
 import api.model.User;
 import api.model.dto.UserResponse;
 import api.repo.UserRepository;
@@ -19,7 +20,7 @@ public class UserService implements IUserService {
     @Override
     public User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("ERROR: User with id " + id + " not found"));
+                () -> new UserNotFoundException("ERROR: User with id " + id + " not found"));
     }
 
     @Override

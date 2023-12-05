@@ -1,5 +1,6 @@
 package api.security.config;
 
+import api.exception.UserNotFoundException;
 import api.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ public class ApplicationConfiguration {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> repository.findUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("ERROR: User with email "+ email + " not found"));
     }
 
     @Bean

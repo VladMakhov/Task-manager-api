@@ -1,13 +1,18 @@
 package api.security.service;
 
+import api.exception.UserAlreadyExistException;
+import api.exception.UserNotFoundException;
+import api.exception.WrongPasswordException;
 import api.model.User;
 import api.repo.UserRepository;
 import api.security.dto.AuthenticationRequest;
 import api.security.dto.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +34,9 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(User request) {
+        if (userRepository.existsUserByEmail(request.getEmail())) {
+            throw new UserAlreadyExistException("ERROR: User with email " + request.getEmail() + " already exist. Try another one");
+        }
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(request);
         var jwtToken = jwtService.generateToken(request);
@@ -43,12 +51,16 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getEmail(),
+                    request.getPassword()
+            ));
+        } catch (BadCredentialsException e) {
+            throw new WrongPasswordException("ERROR: Wrong password");
+        }
         var user = userRepository.findUserByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("ERROR: User with email " + request.getEmail() + " not found"));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .id(user.getId())

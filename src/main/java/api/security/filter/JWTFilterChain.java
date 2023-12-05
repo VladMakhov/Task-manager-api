@@ -40,8 +40,8 @@ public class JWTFilterChain {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/**").authenticated()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
