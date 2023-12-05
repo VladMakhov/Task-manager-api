@@ -3,11 +3,13 @@ package api.service;
 import api.model.Task;
 import api.model.dto.AddCommentRequest;
 import api.model.dto.TaskRequest;
+import api.model.dto.TaskResponse;
 
 public interface ITaskService {
-    Task createTask(TaskRequest request);
+    TaskResponse createTask(TaskRequest request);
     Task getTaskById(int id);
-    Task deleteTaskById(int id);
-    Task updateStatus(int id, String status);
-    Task addComment(int taskId, AddCommentRequest request);
+    TaskResponse deleteTaskById(int id);
+    TaskResponse updateStatus(int id, String status);
+    TaskResponse addComment(int taskId, AddCommentRequest request);
+    TaskResponse getTaskResponse(int id);
 }

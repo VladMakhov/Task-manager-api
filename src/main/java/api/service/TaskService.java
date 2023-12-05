@@ -3,8 +3,7 @@ package api.service;
 import api.model.Comment;
 import api.model.Task;
 import api.model.User;
-import api.model.dto.AddCommentRequest;
-import api.model.dto.TaskRequest;
+import api.model.dto.*;
 import api.repo.CommentRepository;
 import api.repo.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Task createTask(TaskRequest request) {
+    public TaskResponse createTask(TaskRequest request) {
         Task createdTask = new Task();
         createdTask.setId(request.getId());
         createdTask.setTitle(request.getTitle());
@@ -45,7 +44,7 @@ public class TaskService implements ITaskService {
             }
             createdTask.setListOfExecutors(existingExecutors);
         }
-        return taskRepository.save(createdTask);
+        return taskEntityToDto(taskRepository.save(createdTask));
     }
 
     @Override
@@ -55,21 +54,21 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public Task deleteTaskById(int id) {
+    public TaskResponse deleteTaskById(int id) {
         Task task = getTaskById(id);
         taskRepository.deleteById(id);
-        return task;
+        return taskEntityToDto(task);
     }
 
     @Override
-    public Task updateStatus(int id, String status) {
+    public TaskResponse updateStatus(int id, String status) {
         Task task = getTaskById(id);
         task.setStatus(status);
-        return taskRepository.save(task);
+        return taskEntityToDto(taskRepository.save(task));
     }
 
     @Override
-    public Task addComment(int taskId, AddCommentRequest request) {
+    public TaskResponse addComment(int taskId, AddCommentRequest request) {
         User author = userService.getUserById(request.getAuthorId());
 
         Task task = getTaskById(taskId);
@@ -80,6 +79,41 @@ public class TaskService implements ITaskService {
         comment.setComment(request.getComment());
         task.getComments().add(comment);
         commentRepository.save(comment);
-        return taskRepository.save(task);
+        return taskEntityToDto(taskRepository.save(task));
+    }
+
+    @Override
+    public TaskResponse getTaskResponse(int id) {
+        Task task = getTaskById(id);
+        return taskEntityToDto(task);
+    }
+
+    public TaskResponse taskEntityToDto(Task task) {
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+        response.setDescription(task.getDescription());
+        response.setStatus(task.getStatus());
+        response.setPriority(task.getPriority());
+        response.setAuthor(UserService.EntityToDto(task.getAuthor()));
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for (User user : task.getListOfExecutors()) {
+            userResponseList.add(UserService.EntityToDto(user));
+        }
+        response.setListOfExecutors(userResponseList);
+        List<CommentResponse> commentResponseList = new ArrayList<>();
+        for (Comment comment : task.getComments()) {
+            commentResponseList.add(commentEntityToDto(comment));
+        }
+        response.setComments(commentResponseList);
+        return response;
+    }
+
+    public CommentResponse commentEntityToDto(Comment comment) {
+        CommentResponse response = new CommentResponse();
+        response.setId(comment.getId());
+        response.setComment(comment.getComment());
+        response.setAuthor(UserService.EntityToDto(comment.getAuthor()));
+        return response;
     }
 }

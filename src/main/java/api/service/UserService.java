@@ -1,6 +1,7 @@
 package api.service;
 
 import api.model.User;
+import api.model.dto.UserResponse;
 import api.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserResponse getUserResponse(int id) {
+        return EntityToDto(getUserById(id));
+    }
+
+    @Override
     public User deleteUserById(int id) {
         User user = getUserById(id);
         userRepository.deleteById(id);
@@ -37,4 +43,15 @@ public class UserService implements IUserService {
     public User updateUser(User user) {
         return userRepository.save(user);
     }
+
+    public static UserResponse EntityToDto(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setPosition(user.getPosition());
+        return response;
+    }
 }
+

@@ -1,6 +1,7 @@
 package api.controller;
 
 import api.model.User;
+import api.model.dto.UserResponse;
 import api.service.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
+        return new ResponseEntity<>(userService.getUserResponse(id), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}/delete")
