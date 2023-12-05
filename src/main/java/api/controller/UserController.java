@@ -26,11 +26,6 @@ public class UserController {
         return new ResponseEntity<>(userService.deleteUserById(id), HttpStatus.OK);
     }
 
-    @PostMapping("create")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.OK);
-    }
-
     @PutMapping("{id}/update")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);

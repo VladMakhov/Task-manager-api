@@ -6,6 +6,7 @@ import api.model.User;
 import api.model.dto.*;
 import api.repo.CommentRepository;
 import api.repo.TaskRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -63,7 +64,18 @@ public class TaskService implements ITaskService {
     @Override
     public TaskResponse updateStatus(int id, String status) {
         Task task = getTaskById(id);
-        task.setStatus(status);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<User> executors = task.getListOfExecutors();
+        boolean exist = false;
+        for (User user : executors) {
+            if (user.getEmail().equals(username)) {
+                exist = true;
+                break;
+            }
+        }
+        if (exist) {
+            task.setStatus(status);
+        }
         return taskEntityToDto(taskRepository.save(task));
     }
 

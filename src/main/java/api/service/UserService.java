@@ -17,11 +17,6 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
     public User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("ERROR: User with id " + id + " not found"));
