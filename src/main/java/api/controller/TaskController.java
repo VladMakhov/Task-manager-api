@@ -63,4 +63,9 @@ public class TaskController {
         return new ResponseEntity<>(taskService.addComment(id, request), HttpStatus.OK);
     }
 
+    @DeleteMapping("task/{id}/delete")
+    public ResponseEntity<TaskResponse> removeTask(@PathVariable int id) {
+        return new ResponseEntity<>(taskService.removeTask(id), HttpStatus.OK);
+    }
+
 }

@@ -15,4 +15,5 @@ public interface ITaskService {
     TaskResponse getTaskResponse(int id);
     List<TaskResponse> getTasksByAuthor(int id);
     List<TaskResponse> getTasksByExecutor(int id);
+    TaskResponse removeTask(int id);
 }

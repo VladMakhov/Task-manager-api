@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  mysql:
+    image: "mysql:8.1"
+    container_name: "MySQL"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: demo
+  app:
+    build: ./
+    container_name: "API"
+    ports:
+      - 8080:8080

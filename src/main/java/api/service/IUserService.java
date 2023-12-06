@@ -5,6 +5,6 @@ import api.model.dto.UserResponse;
 
 public interface IUserService {
     User getUserById(int id);
-    User updateUser(User user);
+    UserResponse updateUser(User user);
     UserResponse getUserResponse(int id);
 }

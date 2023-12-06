@@ -121,6 +121,13 @@ public class TaskService implements ITaskService {
                 .toList();
     }
 
+    @Override
+    public TaskResponse removeTask(int id) {
+        TaskResponse task = getTaskResponse(id);
+        taskRepository.deleteById(id);
+        return task;
+    }
+
     public TaskResponse taskEntityToDto(Task task) {
         TaskResponse response = new TaskResponse();
         response.setId(task.getId());
