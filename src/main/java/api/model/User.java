@@ -1,6 +1,5 @@
 package api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+
+/**
+ * Class represent blue-print of a user that used in task-management as well as in security
+ * */
 @Data
 @Entity
 @Table(name = "users")

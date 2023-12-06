@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Response to Registration and Creating. Contents of user info + token without security
+ * */
 @Data
 @Builder
 @AllArgsConstructor

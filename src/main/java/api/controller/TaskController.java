@@ -2,12 +2,17 @@ package api.controller;
 
 import api.model.dto.*;
 import api.service.ITaskService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+/**
+ * Class distributes all operation related to task management like create, get, update, delete and commenting
+ * */
 @RestController
 @RequestMapping("/api/")
 public class TaskController {
@@ -16,6 +21,14 @@ public class TaskController {
 
     public TaskController(ITaskService taskService) {
         this.taskService = taskService;
+    }
+
+    @GetMapping("task/all")
+    public ResponseEntity<List<TaskResponse>> getAllTasks(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size
+    ) {
+        return new ResponseEntity<>(taskService.getAllTasks(PageRequest.of(page, size)), HttpStatus.OK);
     }
 
     @GetMapping("task/{id}")

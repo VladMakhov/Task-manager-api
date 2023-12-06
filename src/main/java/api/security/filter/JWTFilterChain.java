@@ -24,9 +24,15 @@ public class JWTFilterChain {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    /**
+     * Main filter chain that defines behavior of security and permits request based on security-headers in request
+     * */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                /*
+                * Basic auth - disabled and csrf and cors request not allowed
+                * */
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer ->
@@ -36,12 +42,18 @@ public class JWTFilterChain {
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
+                /*
+                * Stateless because REST-api with token validation
+                * */
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                /*
+                * Routes that defines where certain user can and can not go
+                * */
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

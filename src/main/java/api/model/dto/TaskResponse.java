@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Response entity of task. Users are striped from their private info.
+ * */
 @Data
 public class TaskResponse {
     private int id;

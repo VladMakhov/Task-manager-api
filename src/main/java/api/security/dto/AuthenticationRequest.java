@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request to authenticate user must contains email (aka username) and password
+ * */
 @Data
 @Builder
 @AllArgsConstructor
