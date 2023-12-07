@@ -8,8 +8,6 @@ import api.repo.UserRepository;
 import api.security.dto.AuthenticationRequest;
 import api.security.dto.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +31,9 @@ public class AuthenticationService {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Method validate uniqueness of email and creates response with new token
+     * */
     public AuthenticationResponse register(User request) {
         if (userRepository.existsUserByEmail(request.getEmail())) {
             throw new UserAlreadyExistException("ERROR: User with email " + request.getEmail() + " already exist. Try another one");
@@ -50,6 +51,9 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * Method authenticates incoming request based on email and password and generates Authentication response with token
+     * */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

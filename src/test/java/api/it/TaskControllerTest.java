@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(MockitoExtension.class)
 public class TaskControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -309,6 +310,7 @@ public class TaskControllerTest {
                                 """)
                 );
     }
+
     @Test
     @Order(70)
     public void addComment_return_commented_task() throws Exception {
@@ -384,6 +386,84 @@ public class TaskControllerTest {
                                           }
                                       ]
                                   }
+                                """)
+                );
+    }
+
+    @Test
+    @Order(80)
+    public void getTaskExecutors_return_list_of_executors() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8080/api/task/1/executors")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isOk(),
+                        MockMvcResultMatchers.content().json("""
+                                  [
+                                      {
+                                          "id": 1,
+                                              "firstName": "test",
+                                              "lastName": "test",
+                                              "email": "test1@mail.com",
+                                              "position": "test"
+                                      },
+                                      {
+                                          "id": 2,
+                                              "firstName": "test",
+                                              "lastName": "test",
+                                              "email": "test2@mail.com",
+                                              "position": "test"
+                                      }
+                                  ]
+                                """)
+                );
+    }
+
+    @Test
+    @Order(90)
+    public void deleteTask_return_task_with_full_info() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:8080/api/task/2/delete")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isOk(),
+                        MockMvcResultMatchers.content().json("""
+                                {
+                                    "id": 2,
+                                    "title": "test2",
+                                    "description": "test",
+                                    "status": "In Progress",
+                                    "priority": "test",
+                                    "author": {
+                                        "id": 2,
+                                        "firstName": "test",
+                                        "lastName": "test",
+                                        "email": "test2@mail.com",
+                                        "position": "test"
+                                    },
+                                    "executors": [
+                                        {
+                                            "id": 2,
+                                            "firstName": "test",
+                                            "lastName": "test",
+                                            "email": "test2@mail.com",
+                                            "position": "test"
+                                        }
+                                    ],
+                                    "comments": [
+                                        {
+                                            "id": 2,
+                                            "comment": "test",
+                                            "author": {
+                                                "id": 2,
+                                                "firstName": "test",
+                                                "lastName": "test",
+                                                "email": "test2@mail.com",
+                                                "position": "test"
+                                            }
+                                        }
+                                    ]
+                                }
                                 """)
                 );
     }

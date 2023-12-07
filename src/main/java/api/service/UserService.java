@@ -6,8 +6,6 @@ import api.model.dto.UserResponse;
 import api.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-
 @Service
 public class UserService implements IUserService {
 
@@ -29,8 +27,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    public UserResponse updateUser(User user) {
+        return EntityToDto(userRepository.save(user));
     }
 
     public static UserResponse EntityToDto(User user) {

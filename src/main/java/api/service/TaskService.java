@@ -9,6 +9,7 @@ import api.model.dto.*;
 import api.repo.CommentRepository;
 import api.repo.TaskRepository;
 import api.repo.UserRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,11 @@ public class TaskService implements ITaskService {
         this.userService = userService;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+    }
+
+    @Override
+    public List<TaskResponse> getAllTasks(PageRequest pageRequest) {
+        return taskRepository.findAll(pageRequest).getContent().stream().map(this::taskEntityToDto).toList();
     }
 
     @Override
@@ -53,8 +59,7 @@ public class TaskService implements ITaskService {
         return taskEntityToDto(taskRepository.save(createdTask));
     }
 
-    @Override
-    public Task getTaskById(int id) {
+    private Task getTaskById(int id) {
         return taskRepository.findById(id).orElseThrow(
                 () -> new TaskNotFoundException("ERROR: Task with id " + id + " not found"));
     }
@@ -119,6 +124,13 @@ public class TaskService implements ITaskService {
                 .filter(Objects::nonNull)
                 .map(this::taskEntityToDto)
                 .toList();
+    }
+
+    @Override
+    public TaskResponse removeTask(int id) {
+        TaskResponse task = getTaskResponse(id);
+        taskRepository.deleteById(id);
+        return task;
     }
 
     public TaskResponse taskEntityToDto(Task task) {

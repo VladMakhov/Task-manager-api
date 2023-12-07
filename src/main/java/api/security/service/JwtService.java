@@ -20,6 +20,9 @@ public class JwtService {
     public static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final Date EXPIRATION = new Date(System.currentTimeMillis() + (1000 * 60 * 24));
 
+    /**
+     * Main method to generate token
+     * */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts
                 .builder()
@@ -31,15 +34,24 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Generate token without extra claims
+     * */
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    /**
+     * Get specific claim from token
+     * */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    /**
+     * Get all claims fron token
+     * */
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
@@ -49,6 +61,9 @@ public class JwtService {
                 .getBody();
     }
 
+    /**
+     * Token validation methods
+     * */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);

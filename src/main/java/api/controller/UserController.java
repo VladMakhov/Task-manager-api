@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Class distributes some operation related to user management
+ * */
 @RestController
 @RequestMapping("/api/user/")
 public class UserController {
@@ -22,7 +25,7 @@ public class UserController {
     }
 
     @PutMapping("{id}/update")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> updateUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);
     }
 
