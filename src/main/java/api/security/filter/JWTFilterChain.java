@@ -1,5 +1,6 @@
 package api.security.filter;
 
+import api.security.config.AuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +19,12 @@ import org.springframework.web.cors.CorsConfiguration;
 public class JWTFilterChain {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthEntryPoint authEntryPoint;
 
     @Autowired
-    public JWTFilterChain(JwtAuthenticationFilter jwtAuthFilter) {
+    public JWTFilterChain(JwtAuthenticationFilter jwtAuthFilter, AuthEntryPoint authEntryPoint) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.authEntryPoint = authEntryPoint;
     }
 
     /**
@@ -40,7 +43,7 @@ public class JWTFilterChain {
                                 new CorsConfiguration().applyPermitDefaultValues())
                 )
                 .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        exception.authenticationEntryPoint(authEntryPoint)
                 )
                 /*
                 * Stateless because REST-api with token validation
@@ -53,7 +56,7 @@ public class JWTFilterChain {
                 * */
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

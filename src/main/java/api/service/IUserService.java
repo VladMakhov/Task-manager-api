@@ -12,7 +12,7 @@ public interface IUserService {
     /**
      * Updates user info
      * */
-    UserResponse updateUser(User user);
+    UserResponse updateUser(User user, int id);
 
     /**
      * Method converts full-info user entity to user-friendly response
