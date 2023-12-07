@@ -76,9 +76,8 @@ public class TaskService implements ITaskService {
                 break;
             }
         }
-        if (exist) {
-            task.setStatus(status);
-        }
+        if (exist) task.setStatus(status);
+
         return taskEntityToDto(taskRepository.save(task));
     }
 

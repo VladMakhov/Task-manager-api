@@ -27,8 +27,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse updateUser(User user) {
-        return EntityToDto(userRepository.save(user));
+    public UserResponse updateUser(User user, int id) {
+        User prev = getUserById(id);
+        if (user.getFirstName() != null) prev.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) prev.setLastName(user.getLastName());
+        if (user.getPosition() != null) prev.setPosition(user.getPosition());
+        prev.setId(id);
+        return EntityToDto(userRepository.save(prev));
     }
 
     public static UserResponse EntityToDto(User user) {
