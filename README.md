@@ -1,4 +1,6 @@
 # Task manager API
+Api description: Swagger UI - http://localhost:8080/swagger-ui/index.html
+
 ## About app
 1) The RESTful-API system that provide functionality for the creation, editing, deletion and viewing of tasks. Each task must contain a title, description, status (for example, "pending", "in progress", "completed") and priority (for example, "high", "medium", "low"), as well as the author of the task and the performer.
 
