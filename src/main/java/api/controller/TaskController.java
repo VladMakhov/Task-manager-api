@@ -77,10 +77,16 @@ public class TaskController {
         return new ResponseEntity<>(taskService.createTask(request), HttpStatus.OK);
     }
 
-    @PutMapping("task/{id}/updateStatus")
+    @PutMapping("task/{id}/start")
     @ApiOperation("Update task")
-    public ResponseEntity<TaskDto> updateStatus(@PathVariable int id, @RequestBody StatusDto status) {
-        return new ResponseEntity<>(taskService.updateStatus(id, status.getStatus()), HttpStatus.OK);
+    public ResponseEntity<TaskDto> updateStatusToInProgress(@PathVariable int id) {
+        return new ResponseEntity<>(taskService.start(id), HttpStatus.OK);
+    }
+
+    @PutMapping("task/{id}/done")
+    @ApiOperation("Update task")
+    public ResponseEntity<TaskDto> updateStatusToDone(@PathVariable int id) {
+        return new ResponseEntity<>(taskService.done(id), HttpStatus.OK);
     }
 
     @PutMapping("task/{id}/addComment")

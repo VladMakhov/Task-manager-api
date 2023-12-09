@@ -1,9 +1,11 @@
 package api.service;
 
+import api.exception.NoAuthorityException;
 import api.exception.UserNotFoundException;
 import api.model.User;
 import api.model.dto.UserDto;
 import api.repo.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,11 +24,15 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto updateUser(UserDto user) {
-        User existingUser = getUserById(user.getId());
-        if (user.getFirstName() != null) existingUser.setFirstName(user.getFirstName());
-        if (user.getLastName() != null) existingUser.setLastName(user.getLastName());
-        if (user.getPosition() != null) existingUser.setPosition(user.getPosition());
-        return entityToDto(userRepository.save(existingUser));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username.equals(user.getEmail())) {
+            User existingUser = getUserById(user.getId());
+            if (user.getFirstName() != null) existingUser.setFirstName(user.getFirstName());
+            if (user.getLastName() != null) existingUser.setLastName(user.getLastName());
+            if (user.getPosition() != null) existingUser.setPosition(user.getPosition());
+            return entityToDto(userRepository.save(existingUser));
+        }
+        throw new NoAuthorityException("ERROR: User has not authority to update this user");
     }
 
     @Override
