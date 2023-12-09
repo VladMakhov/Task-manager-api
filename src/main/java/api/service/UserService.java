@@ -2,7 +2,7 @@ package api.service;
 
 import api.exception.UserNotFoundException;
 import api.model.User;
-import api.model.dto.UserResponse;
+import api.model.dto.UserDto;
 import api.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,34 +16,35 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserDto getUserResponse(int id) {
+        return entityToDto(getUserById(id));
+    }
+
+    @Override
+    public UserDto updateUser(UserDto user) {
+        User existingUser = getUserById(user.getId());
+        if (user.getFirstName() != null) existingUser.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) existingUser.setLastName(user.getLastName());
+        if (user.getPosition() != null) existingUser.setPosition(user.getPosition());
+        return entityToDto(userRepository.save(existingUser));
+    }
+
+    @Override
     public User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("ERROR: User with id " + id + " not found"));
     }
 
     @Override
-    public UserResponse getUserResponse(int id) {
-        return EntityToDto(getUserById(id));
+    public UserDto entityToDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getPosition()
+        );
     }
 
-    @Override
-    public UserResponse updateUser(User user, int id) {
-        User prev = getUserById(id);
-        if (user.getFirstName() != null) prev.setFirstName(user.getFirstName());
-        if (user.getLastName() != null) prev.setLastName(user.getLastName());
-        if (user.getPosition() != null) prev.setPosition(user.getPosition());
-        prev.setId(id);
-        return EntityToDto(userRepository.save(prev));
-    }
-
-    public static UserResponse EntityToDto(User user) {
-        UserResponse response = new UserResponse();
-        response.setId(user.getId());
-        response.setFirstName(user.getFirstName());
-        response.setLastName(user.getLastName());
-        response.setEmail(user.getEmail());
-        response.setPosition(user.getPosition());
-        return response;
-    }
 }
 

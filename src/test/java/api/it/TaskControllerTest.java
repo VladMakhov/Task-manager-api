@@ -422,6 +422,11 @@ public class TaskControllerTest {
     @Test
     @Order(90)
     public void deleteTask_return_task_with_full_info() throws Exception {
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(securityContextMock.getAuthentication().getName()).thenReturn("test2@mail.com");
+        SecurityContextHolder.setContext(securityContextMock);
         mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:8080/api/task/2/delete")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

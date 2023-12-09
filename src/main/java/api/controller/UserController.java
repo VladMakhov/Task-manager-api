@@ -1,7 +1,6 @@
 package api.controller;
 
-import api.model.User;
-import api.model.dto.UserResponse;
+import api.model.dto.UserDto;
 import api.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Class distributes some operation related to user management
- * */
+ */
 @RestController
 @RequestMapping("/api/user/")
 @Api("Controller for managing user info")
@@ -24,14 +23,15 @@ public class UserController {
 
     @GetMapping("{id}")
     @ApiOperation("Get specific user by its ID")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable int id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable int id) {
         return new ResponseEntity<>(userService.getUserResponse(id), HttpStatus.OK);
     }
 
     @PutMapping("{id}/update")
     @ApiOperation("Create new user")
-    public ResponseEntity<UserResponse> updateUser(@RequestBody User user, @PathVariable("id") int id) {
-        return new ResponseEntity<>(userService.updateUser(user, id), HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUser(@PathVariable int id, @RequestBody UserDto user) {
+        user.setId(id);
+        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.OK);
     }
 
 }

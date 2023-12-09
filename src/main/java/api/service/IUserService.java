@@ -1,7 +1,7 @@
 package api.service;
 
 import api.model.User;
-import api.model.dto.UserResponse;
+import api.model.dto.UserDto;
 
 public interface IUserService {
     /**
@@ -12,11 +12,16 @@ public interface IUserService {
     /**
      * Updates user info
      * */
-    UserResponse updateUser(User user, int id);
+    UserDto updateUser(UserDto user);
 
     /**
      * Method converts full-info user entity to user-friendly response
      * */
-    UserResponse getUserResponse(int id);
+    UserDto getUserResponse(int id);
+
+    /**
+     * Converts user entity to dto
+     * */
+    UserDto entityToDto(User user);
 
 }

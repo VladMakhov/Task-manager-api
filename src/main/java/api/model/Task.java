@@ -2,11 +2,13 @@ package api.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -18,6 +20,13 @@ public class Task {
     private String description;
     private String status;
     private String priority;
+
+    public Task(String title, String description, String status, String priority) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+    }
 
     @ManyToOne
     private User author;
