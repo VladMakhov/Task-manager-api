@@ -537,4 +537,33 @@ public class TaskControllerTest {
                                 """)
                 );
     }
+
+    @Test
+    @Order(100)
+    public void deleteTask_throws_exception_401() throws Exception {
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(securityContextMock.getAuthentication().getName()).thenReturn("fail@mail.com");
+        SecurityContextHolder.setContext(securityContextMock);
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:8080/api/task/1/delete")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(401))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ERROR: User don`t have authority to contribute to this task"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists());
+
+    }
+
+    @Test
+    @Order(110)
+    public void deleteTask_throws_exception_404() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("http://localhost:8080/api/task/2/delete")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(404))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ERROR: Task with id 2 not found"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists());
+
+    }
 }

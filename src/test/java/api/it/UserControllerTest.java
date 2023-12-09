@@ -50,6 +50,17 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(15)
+    public void getUserById_throws_exception() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("http://localhost:8080/api/user/0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(404))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ERROR: User with id 0 not found"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists());
+    }
+
+    @Test
     @Order(20)
     public void updateUser_return_updated_user() throws Exception {
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
