@@ -45,7 +45,7 @@ public class TaskControllerTest {
                                       "id": 1,
                                       "title": "test1",
                                       "description": "test",
-                                      "status": "test",
+                                      "status": "Awaits",
                                       "priority": "test",
                                       "author": {
                                           "id": 1,
@@ -148,7 +148,7 @@ public class TaskControllerTest {
                                            "id": 1,
                                                "title": "test1",
                                                "description": "test",
-                                               "status": "test",
+                                               "status": "Awaits",
                                                "priority": "test",
                                                "author": {
                                            "id": 1,
@@ -206,7 +206,7 @@ public class TaskControllerTest {
                                            "id": 1,
                                            "title": "test1",
                                            "description": "test",
-                                           "status": "test",
+                                           "status": "Awaits",
                                            "priority": "test",
                                            "author": {
                                                "id": 1,
@@ -252,21 +252,15 @@ public class TaskControllerTest {
 
     @Test
     @Order(60)
-    public void updateTask_return_updated_task() throws Exception {
+    public void setStatusToInProgress_return_updated_task() throws Exception {
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
         Authentication authenticationMock = Mockito.mock(Authentication.class);
         Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         Mockito.when(securityContextMock.getAuthentication().getName()).thenReturn("test2@mail.com");
         SecurityContextHolder.setContext(securityContextMock);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("http://localhost:8080/api/task/2/updateStatus")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "status": "In Progress"
-                                }
-                                """))
+        mockMvc.perform(MockMvcRequestBuilders.put("http://localhost:8080/api/task/2/start")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpectAll(
                         MockMvcResultMatchers.status().isOk(),
@@ -275,7 +269,7 @@ public class TaskControllerTest {
                                         "id": 2,
                                         "title": "test2",
                                         "description": "test",
-                                        "status": "In Progress",
+                                        "status": "In progress",
                                         "priority": "test",
                                         "author": {
                                             "id": 2,
@@ -312,6 +306,77 @@ public class TaskControllerTest {
     }
 
     @Test
+    @Order(65)
+    public void setStatusToDone_return_updated_task() throws Exception {
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(securityContextMock.getAuthentication().getName()).thenReturn("test2@mail.com");
+        SecurityContextHolder.setContext(securityContextMock);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("http://localhost:8080/api/task/2/done")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpectAll(
+                        MockMvcResultMatchers.status().isOk(),
+                        MockMvcResultMatchers.content().json("""
+                                    {
+                                        "id": 2,
+                                        "title": "test2",
+                                        "description": "test",
+                                        "status": "Done",
+                                        "priority": "test",
+                                        "author": {
+                                            "id": 2,
+                                            "firstName": "test",
+                                            "lastName": "test",
+                                            "email": "test2@mail.com",
+                                            "position": "test"
+                                        },
+                                        "executors": [
+                                            {
+                                                "id": 2,
+                                                "firstName": "test",
+                                                "lastName": "test",
+                                                "email": "test2@mail.com",
+                                                "position": "test"
+                                            }
+                                        ],
+                                        "comments": [
+                                            {
+                                                "id": 2,
+                                                "comment": "test",
+                                                "author": {
+                                                    "id": 2,
+                                                    "firstName": "test",
+                                                    "lastName": "test",
+                                                    "email": "test2@mail.com",
+                                                    "position": "test"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                """)
+                );
+    }
+    @Test
+    @Order(67)
+    public void setStatusToDone_throws_exception() throws Exception {
+        SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
+        Authentication authenticationMock = Mockito.mock(Authentication.class);
+        Mockito.when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        Mockito.when(securityContextMock.getAuthentication().getName()).thenReturn("fail@mail.com");
+        SecurityContextHolder.setContext(securityContextMock);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("http://localhost:8080/api/task/2/done")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode").value(401))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("ERROR: User don`t have authority to contribute to this task"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.timestamp").exists());
+    }
+
+    @Test
     @Order(70)
     public void addComment_return_commented_task() throws Exception {
         SecurityContext securityContextMock = Mockito.mock(SecurityContext.class);
@@ -336,7 +401,7 @@ public class TaskControllerTest {
                                       "id": 1,
                                       "title": "test1",
                                       "description": "test",
-                                      "status": "test",
+                                      "status": "Awaits",
                                       "priority": "test",
                                       "author": {
                                           "id": 1,
@@ -437,7 +502,7 @@ public class TaskControllerTest {
                                     "id": 2,
                                     "title": "test2",
                                     "description": "test",
-                                    "status": "In Progress",
+                                    "status": "Done",
                                     "priority": "test",
                                     "author": {
                                         "id": 2,

@@ -1,11 +1,13 @@
 package api.service;
 
+import api.exception.NoAuthorityException;
 import api.exception.TaskNotFoundException;
 import api.exception.UserNotFoundException;
 import api.model.Comment;
 import api.model.Task;
 import api.model.User;
 import api.model.dto.*;
+import api.model.enums.EStatus;
 import api.repo.CommentRepository;
 import api.repo.TaskRepository;
 import api.repo.UserRepository;
@@ -45,8 +47,7 @@ public class TaskService implements ITaskService {
         Task task = new Task(
                 request.getTitle(),
                 request.getDescription(),
-                request.getPriority(),
-                request.getStatus()
+                request.getPriority()
         );
         task.setAuthor(userService.getUserById(request.getAuthor()));
         if (request.getExecutors() != null) {
@@ -56,20 +57,39 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public TaskDto updateStatus(int id, String status) {
+    public TaskDto start(int id) {
         Task task = getTaskById(id);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (task.getAuthor().getEmail().equals(username)) {
-            task.setStatus(status);
+            task.setStatus(EStatus.IN_PROGRESS.toString());
+            return taskEntityToDto(taskRepository.save(task));
         } else {
             for (User user : task.getExecutor()) {
                 if (Objects.equals(user.getEmail(), username)) {
-                    task.setStatus(status);
-                    break;
+                    task.setStatus(EStatus.IN_PROGRESS.toString());
+                    return taskEntityToDto(taskRepository.save(task));
                 }
             }
         }
-        return taskEntityToDto(taskRepository.save(task));
+        throw new NoAuthorityException("ERROR: User don`t have authority to contribute to this task");
+    }
+
+    @Override
+    public TaskDto done(int id) {
+        Task task = getTaskById(id);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (task.getAuthor().getEmail().equals(username)) {
+            task.setStatus(EStatus.DONE.toString());
+            return taskEntityToDto(taskRepository.save(task));
+        } else {
+            for (User user : task.getExecutor()) {
+                if (Objects.equals(user.getEmail(), username)) {
+                    task.setStatus(EStatus.DONE.toString());
+                    return taskEntityToDto(taskRepository.save(task));
+                }
+            }
+        }
+        throw new NoAuthorityException("ERROR: User don`t have authority to contribute to this task");
     }
 
     @Override
@@ -77,7 +97,7 @@ public class TaskService implements ITaskService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User user = userRepository.findUserByEmail(username).orElseThrow(
-                () -> new UserNotFoundException("User with username " + username + " not found"));
+                () -> new UserNotFoundException("ERROR: User with username " + username + " not found"));
 
         Comment comment = new Comment(
                 request.getId(),
@@ -98,7 +118,7 @@ public class TaskService implements ITaskService {
     @Override
     public List<TaskDto> getTasksByAuthor(int id) {
         User author = userService.getUserById(id);
-        if (author == null) throw new UserNotFoundException("User with id " + id + " not found");
+        if (author == null) throw new UserNotFoundException("ERROR: User with id " + id + " not found");
         return taskRepository.findAllByAuthor(author)
                 .stream()
                 .map(this::taskEntityToDto)
@@ -108,7 +128,7 @@ public class TaskService implements ITaskService {
     @Override
     public List<TaskDto> getTasksByExecutor(int id) {
         User user = userService.getUserById(id);
-        if (user == null) throw new UserNotFoundException("User with id " + id + " not found");
+        if (user == null) throw new UserNotFoundException("ERROR: User with id " + id + " not found");
         return taskRepository.findAllByExecutorId(id).stream()
                 .map(this::getTaskById)
                 .filter(Objects::nonNull)
@@ -122,15 +142,16 @@ public class TaskService implements ITaskService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (task.getAuthor().getEmail().equals(username)) {
             taskRepository.deleteById(id);
+            return task;
         } else {
             for (UserDto user : task.getExecutors()) {
                 if (Objects.equals(user.getEmail(), username)) {
                     taskRepository.deleteById(id);
-                    break;
+                    return task;
                 }
             }
         }
-        return task;
+        throw new NoAuthorityException("ERROR: User don`t have authority to contribute to this task");
     }
 
     public TaskDto taskEntityToDto(Task task) {

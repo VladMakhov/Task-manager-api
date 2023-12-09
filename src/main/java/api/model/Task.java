@@ -1,5 +1,6 @@
 package api.model;
 
+import api.model.enums.EStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +19,12 @@ public class Task {
 
     private String title;
     private String description;
-    private String status;
+    private String status = EStatus.IN_PROGRESS.toString();
     private String priority;
 
-    public Task(String title, String description, String status, String priority) {
+    public Task(String title, String description, String priority) {
         this.title = title;
         this.description = description;
-        this.status = status;
         this.priority = priority;
     }
 

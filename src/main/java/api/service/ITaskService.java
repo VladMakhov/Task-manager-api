@@ -19,9 +19,14 @@ public interface ITaskService {
     TaskDto createTask(TaskRequest request);
 
     /**
-     * If user in the list of executors - he can update status of task by sending new-status and task id
+     * If user in the list of executors or author - he can update status of task to In progress
      * */
-    TaskDto updateStatus(int id, String status);
+    TaskDto start(int id);
+
+    /**
+     * If user in the list of executors or author - he can update status of task to Done
+     * */
+    TaskDto done(int id);
 
     /**
      * User can add comment to task using add-comment-request and task-id
